@@ -3,28 +3,6 @@ import numpy as np
 from sklearn.preprocessing import LabelEncoder, KBinsDiscretizer
 from sklearn.model_selection import train_test_split
 
-'''
-数据处理部分：
-采用部分criteo数据：10000条
-
-缺失值填充
-密集数据I1-I13离散化分桶（bins=100），稀疏数据C1-C26编码(LabelEncoder)
-切分数据集
-'''
-
-def sparseFeature(feat, feat_num, embed_dim=4):
-    """
-    :param feat: feature name
-    :param feat_num: the total number of sparse features that do not repeat
-    :param embed_dim: embedding dimension
-    """
-    return {'feat':feat, 'feat_num':feat_num, 'embed_dim':embed_dim}
-
-def denseFeature(feat):
-    """
-    :param feat: feature name
-    """
-    return {'feat':feat}
 
 def create_criteo_dataset(file, embed_dim=8, test_size=0.2):
     """
@@ -58,7 +36,7 @@ def create_criteo_dataset(file, embed_dim=8, test_size=0.2):
     0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	1.0	16.0	1.0	0.0	0.0	229	250	43140	12137	23	5	6591	27	2	7231	2691	8957	424	4	2809	18686	9	2422	150	3	1163	0	2	9570	41	5604
     '''
 
-    feature_columns = [sparseFeature(feat, int(df[feat]).max+1, embed_dim)  for feat in features]
+    feature_columns = [{'feat':feat, 'feat_num':int(df[feat]).max+1, 'embed_dim':embed_dim}  for feat in features]
 
     train, test = train_test_split(df, test_size)
     train_X = train[features].values.astype('int32')
@@ -67,3 +45,12 @@ def create_criteo_dataset(file, embed_dim=8, test_size=0.2):
     test_y = test['label'].values.astype('int32')
 
     return feature_columns, (train_X, train_y), (test_X, test_y)
+
+'''
+数据处理部分：
+采用部分criteo数据：10000条
+
+缺失值填充
+密集数据I1-I13离散化分桶（bins=100），稀疏数据C1-C26编码(LabelEncoder)
+切分数据集
+'''
